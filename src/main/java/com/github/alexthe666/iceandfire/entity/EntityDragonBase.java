@@ -1131,13 +1131,13 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                     ItemStack slashBlade = cloudSlashBlade();
                     if (!level().isClientSide) {
                         this.spawnAtLocation(heart, 1);
-                        if (this.getDeathStage() > 3) {
+                        if (this.getAgeInDays() >= 75) {
                             this.spawnAtLocation(dragonCross, 1);
                         }
                         if (!this.isMale() && this.getDragonStage() > 3) {
                             this.spawnAtLocation(egg, 1);
                         }
-                        if (this.getDeathStage() > 4) {
+                        if (this.getAgeInDays() >= 100) {
                             this.spawnAtLocation(slashBlade, 1);
                         }
                     }
