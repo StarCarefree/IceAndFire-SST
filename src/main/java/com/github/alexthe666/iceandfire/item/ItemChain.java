@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -18,14 +19,57 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
-
+import net.minecraft.resources.ResourceLocation;
 import javax.annotation.Nullable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class ItemChain extends Item {
 
     private final boolean sticky;
+
+    private static final Set<String> BOSS_IDS = new HashSet<>(Set.of(
+            "mutantmonsters:mutant_skeleton",
+            "mutantmonsters:mutant_enderman",
+            "mutantmonsters:mutant_creeper",
+            "mowziesmobs:frostmaw",
+            "mowziesmobs:umvuthi",
+            "mowziesmobs:ferrous_wroughtnaut",
+            "blue_skies:arachnarch",
+            "blue_skies:alchemist",
+            "blue_skies:summoner",
+            "blue_skies:starlit_crusher",
+            "callfromthedepth_:agonysoul",
+            "twilightforest:snow_queen",
+            "twilightforest:alpha_yeti",
+            "twilightforest:knight_phantom",
+            "twilightforest:hydra",
+            "twilightforest:lich",
+            "twilightforest:naga",
+            "minecraft:wither",
+            "twilightforest:armored_giant",
+            "minecraft:ender_dragon",
+            "callfromthedepth_:injuredmarbleguard",
+            "callfromthedepth_:deepdarkestspawn",
+            "callfromthedepth_:deepdarkestspwansecondphase",
+            "corundumguardian:corundum_guardian",
+            "hs_bosses:sand_warrior",
+            "minecraft:warden",
+            "iceandfire:fire_dragon",
+            "iceandfire:ice_dragon",
+            "iceandfire:lightning_dragon",
+            "iceandfire:hydra",
+            "iceandfire:gorgon",
+            "iceandfire:cyclops"
+    ));
+
+    private boolean isForbiddenEntity(LivingEntity entity) {
+        ResourceLocation id = EntityType.getKey(entity.getType());
+        return BOSS_IDS.contains(id.toString());
+    }
 
     public ItemChain(boolean sticky) {
         super(new Item.Properties()/*.tab(IceAndFire.TAB_ITEMS)*/);
@@ -37,6 +81,12 @@ public class ItemChain extends Item {
         int i = fence.getX();
         int j = fence.getY();
         int k = fence.getZ();
+
+        List<LivingEntity> entities = worldIn.getEntitiesOfClass(LivingEntity.class,
+                        new AABB(i - d0, j - d0, k - d0, i + d0, j + d0, k + d0))
+                .stream()
+                .filter(e -> !((ItemChain)player.getMainHandItem().getItem()).isForbiddenEntity(e))
+                .collect(Collectors.toList());
 
         for (LivingEntity livingEntity : worldIn.getEntitiesOfClass(LivingEntity.class, new AABB((double) i - d0, (double) j - d0, (double) k - d0, (double) i + d0, (double) j + d0, (double) k + d0))) {
             EntityDataProvider.getCapability(livingEntity).ifPresent(data -> {
@@ -66,6 +116,11 @@ public class ItemChain extends Item {
 
     @Override
     public @NotNull InteractionResult interactLivingEntity(@NotNull ItemStack stack, @NotNull Player playerIn, @NotNull LivingEntity target, @NotNull InteractionHand hand) {
+
+        if (isForbiddenEntity(target)) {
+            return InteractionResult.FAIL;
+        }
+
         EntityDataProvider.getCapability(target).ifPresent(targetData -> {
             if (targetData.chainData.isChainedTo(playerIn)) {
                 return;
