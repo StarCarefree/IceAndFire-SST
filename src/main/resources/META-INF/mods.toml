@@ -1,6 +1,6 @@
 modLoader = "javafml" #mandatory
 loaderVersion = "[37.0,)" #mandatory
-issueTrackerURL = "https://github.com/Alex-the-666/ice-and-fire/issues" #optional
+issueTrackerURL = "https://github.com/StarCarefree/IceAndFire-SST/issues" #optional
 license = "GNU LESSER GENERAL PUBLIC LICENSE"
 [[mods]] #mandatory
 modId = "iceandfire" #mandatory

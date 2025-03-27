@@ -82,12 +82,6 @@ public class ItemChain extends Item {
         int j = fence.getY();
         int k = fence.getZ();
 
-        List<LivingEntity> entities = worldIn.getEntitiesOfClass(LivingEntity.class,
-                        new AABB(i - d0, j - d0, k - d0, i + d0, j + d0, k + d0))
-                .stream()
-                .filter(e -> !((ItemChain)player.getMainHandItem().getItem()).isForbiddenEntity(e))
-                .collect(Collectors.toList());
-
         for (LivingEntity livingEntity : worldIn.getEntitiesOfClass(LivingEntity.class, new AABB((double) i - d0, (double) j - d0, (double) k - d0, (double) i + d0, (double) j + d0, (double) k + d0))) {
             EntityDataProvider.getCapability(livingEntity).ifPresent(data -> {
                 if (data.chainData.isChainedTo(player)) {
